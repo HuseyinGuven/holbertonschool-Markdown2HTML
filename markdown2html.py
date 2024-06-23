@@ -1,5 +1,6 @@
 import sys
 import os.path
+import re
 
 def convert_markdown_to_html(markdown_file, output_file):
     """
@@ -21,12 +22,39 @@ def convert_markdown_to_html(markdown_file, output_file):
     with open(markdown_file, 'r') as f:
         markdown_content = f.read()
     
-    # In a real scenario, implement Markdown to HTML conversion logic here
-    # For demonstration, just writing Markdown content to output file
+    # Convert Markdown to HTML
+    html_content = markdown_to_html(markdown_content)
+    
+    # Write HTML content to output file
     with open(output_file, 'w') as f:
-        f.write(markdown_content)
+        f.write(html_content)
     
     sys.exit(0)
+
+def markdown_to_html(markdown_content):
+    """
+    Converts Markdown content to HTML.
+
+    Args:
+        markdown_content (str): Content of the Markdown file.
+
+    Returns:
+        str: Content converted to HTML.
+    """
+    # Regex pattern for detecting Markdown headings (e.g., ## Heading)
+    heading_pattern = r'^(#+)\s+(.*)$'
+    
+    # Function to replace Markdown headings with HTML headings
+    def replace_heading(match):
+        level = len(match.group(1))  # Count of '#' determines heading level
+        heading_text = match.group(2)
+        html_heading = f'<h{level}>{heading_text}</h{level}>'
+        return html_heading
+    
+    # Perform the replacement using the defined function
+    html_content = re.sub(heading_pattern, replace_heading, markdown_content, flags=re.MULTILINE)
+    
+    return html_content
 
 if __name__ == "__main__":
     # Check if correct number of arguments are provided
